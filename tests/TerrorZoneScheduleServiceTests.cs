@@ -4,8 +4,9 @@ namespace TerrorZoneNotifier.Tests;
 
 public class TerrorZoneScheduleServiceTests
 {
-    // Fixed "now": 2026-02-15 12:00 UTC. Tests run in UTC so the local date is unambiguous.
-    private static readonly DateTimeOffset NowUtc = new(2026, 2, 15, 12, 0, 0, TimeSpan.Zero);
+    // Fixed "now": 2026-02-15 09:00 UTC (the 9am cron). Tests run in UTC so the local date is
+    // unambiguous, and the standing test windows (10:00+) sit after "now" so they aren't filtered.
+    private static readonly DateTimeOffset NowUtc = new(2026, 2, 15, 9, 0, 0, TimeSpan.Zero);
     private static readonly TimeZoneInfo Utc = TimeZoneInfo.Utc;
 
     private static TerrorZoneEntry Slot(string isoUtc, string name) => new()
@@ -133,9 +134,9 @@ public class TerrorZoneScheduleServiceTests
     [Fact]
     public void Converts_window_times_into_the_local_zone()
     {
-        // 10:00 UTC is 05:00 in New York (UTC-5 in February).
+        // 10:00 UTC is 05:00 in New York (UTC-5 in February). "now" is earlier so the window stays.
         var ny = TimeZoneInfo.FindSystemTimeZoneById("America/New_York");
-        var nowUtc = new DateTimeOffset(2026, 2, 15, 12, 0, 0, TimeSpan.Zero);
+        var nowUtc = new DateTimeOffset(2026, 2, 15, 8, 0, 0, TimeSpan.Zero);
         var entries = new[] { Slot("2026-02-15T10:00:00+00:00", "Durance of Hate") };
 
         var result = TerrorZoneScheduleService.BuildForToday(entries, ny, Targets("Durance"),nowUtc);
@@ -209,6 +210,41 @@ public class TerrorZoneScheduleServiceTests
         Assert.Collection(targets,
             t => { Assert.Equal("Durance", t.Keyword); Assert.Equal("Mephisto", t.Boss); },
             t => { Assert.Equal("Catacombs", t.Keyword); Assert.Equal("Andariel", t.Boss); });
+    }
+
+    [Fact]
+    public void Drops_windows_that_already_ended_before_now()
+    {
+        // Cron runs at 09:00; an overnight zone that's already over must not be reported.
+        var nowUtc = new DateTimeOffset(2026, 2, 15, 9, 0, 0, TimeSpan.Zero);
+        var entries = new[]
+        {
+            Slot("2026-02-15T02:00:00+00:00", "Durance of Hate"), // 02:00–02:30, over by 9am
+            Slot("2026-02-15T10:00:00+00:00", "Durance of Hate"), // 10:00–10:30, still ahead
+        };
+
+        var result = TerrorZoneScheduleService.BuildForToday(entries, Utc, Targets("Durance"), nowUtc);
+
+        var window = Assert.Single(result.Windows);
+        Assert.Equal(new DateTimeOffset(2026, 2, 15, 10, 0, 0, TimeSpan.Zero), window.Start);
+    }
+
+    [Fact]
+    public void Keeps_a_window_that_is_still_active_at_now()
+    {
+        // 08:30–09:30 straddles the 09:00 run — still worth reporting.
+        var nowUtc = new DateTimeOffset(2026, 2, 15, 9, 0, 0, TimeSpan.Zero);
+        var entries = new[]
+        {
+            Slot("2026-02-15T08:30:00+00:00", "Durance of Hate"),
+            Slot("2026-02-15T09:00:00+00:00", "Durance of Hate"),
+        };
+
+        var result = TerrorZoneScheduleService.BuildForToday(entries, Utc, Targets("Durance"), nowUtc);
+
+        var window = Assert.Single(result.Windows);
+        Assert.Equal(new DateTimeOffset(2026, 2, 15, 8, 30, 0, TimeSpan.Zero), window.Start);
+        Assert.Equal(new DateTimeOffset(2026, 2, 15, 9, 30, 0, TimeSpan.Zero), window.End);
     }
 
     [Fact]

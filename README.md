@@ -11,8 +11,9 @@ Designed for **D2R single-player, Reign of the Warlock** (30-minute rotation).
 1. `TerrorZoneNotifier` fires daily at 09:00 (interpreted in `WEBSITE_TIME_ZONE`).
 2. It downloads the static feed `https://d2emu.com/data/tz-2023-localized.json`.
 3. It converts every UTC slot into your local zone, keeps the ones whose English name matches any
-   zone in `zone-targets.json` and start **today**, and merges back-to-back 30-min slots of the
-   same zone into single windows.
+   zone in `zone-targets.json` and start **today**, merges back-to-back 30-min slots of the same
+   zone into single windows, and drops any window that's already ended (so the 9am run won't report
+   last night's zones — ongoing windows are kept).
 4. Outcomes:
    - **A tracked zone today** → email with each boss's window(s), immunities, boss-pack count, super uniques.
    - **No tracked zone today** → silent by default; set `SEND_WHEN_NONE=true` for a "nothing today" note.

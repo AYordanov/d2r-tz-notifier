@@ -67,9 +67,11 @@ To preview the design in SendGrid's editor, paste this into its *Test Data* pane
 ```
 
 The template renders three states from one payload — windows today, nothing today, and a feed-gap
-alert — via Handlebars (`hasWindows` / `isFeedGap`). It's styled dark obsidian with a blood-red header
-banner and a Trajan-like `Cinzel` heading font (custom fonts only render in clients that allow them,
-e.g. Apple Mail; Gmail falls back to serif but keeps the colours).
+alert — via Handlebars (`hasWindows` / `isFeedGap`). It's styled as aged parchment (dark ink on paper)
+with a blood-red header banner and a Trajan-like `Cinzel` heading font. The light palette is deliberate:
+Gmail's mobile dark mode recolors near-black backgrounds, so a parchment design stays legible everywhere.
+Custom fonts only render in clients that allow them (e.g. Apple Mail); Gmail falls back to serif but
+keeps the colours.
 
 ## The 9am / timezone bit (read this)
 

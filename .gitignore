@@ -483,12 +483,3 @@ $RECYCLE.BIN/
 
 # Azure Functions local settings (may contain secrets)
 local.settings.json
-
-# Terraform
-infra/.terraform/
-infra/.terraform.lock.hcl
-*.tfstate
-*.tfstate.*
-infra/backend.hcl
-infra/terraform.tfvars
-crash.log

@@ -10,12 +10,12 @@ Designed for **D2R single-player, Reign of the Warlock** (30-minute rotation).
 
 1. `TerrorZoneNotifier` fires daily at 09:00 (interpreted in `WEBSITE_TIME_ZONE`).
 2. It downloads the static feed `https://d2emu.com/data/tz-2023-localized.json`.
-3. It converts every UTC slot into your local zone, keeps the ones whose English name contains
-   `ZONE_KEYWORD` (`"Durance"`) and start **today**, and merges back-to-back 30-min slots into
-   single windows.
+3. It converts every UTC slot into your local zone, keeps the ones whose English name matches any
+   configured `ZONE_TARGETS` keyword and start **today**, and merges back-to-back 30-min slots of
+   the same zone into single windows.
 4. Outcomes:
-   - **Mephisto today** → email with the window(s), immunities, boss-pack count, super uniques.
-   - **No Mephisto today** → silent by default; set `SEND_WHEN_NONE=true` for a "nothing today" note.
+   - **A tracked zone today** → email with each boss's window(s), immunities, boss-pack count, super uniques.
+   - **No tracked zone today** → silent by default; set `SEND_WHEN_NONE=true` for a "nothing today" note.
    - **Today missing from the feed** (stale file / horizon exhausted) → always emails a gap alert.
 
 There is also a `RunNow` HTTP trigger so you can test on demand without waiting for 09:00.
@@ -27,8 +27,8 @@ There is also a `RunNow` HTTP trigger so you can test on demand without waiting 
 | `SENDGRID_API_KEY` | yes | — | SendGrid API key. |
 | `MEPHISTO_FROM_EMAIL` | yes | — | Must be a **verified sender** in SendGrid. |
 | `MEPHISTO_TO_EMAIL` | yes | — | Where the mail goes (your inbox). |
-| `SEND_WHEN_NONE` | no | `false` | Email on Mephisto-free days too. |
-| `ZONE_KEYWORD` | no | `Durance` | Substring matched against the English zone name. Change it to track a different zone (e.g. `Chaos Sanctuary`). |
+| `SEND_WHEN_NONE` | no | `false` | Email on days when no tracked zone is up. |
+| `ZONE_TARGETS` | no | `[{"keyword":"Durance","boss":"Mephisto"}]` | JSON array of zones to track. Each item has a `keyword` (substring matched against the English zone name) and a `boss` (label shown in the email). Add entries to track more, e.g. `[{"keyword":"Durance","boss":"Mephisto"},{"keyword":"Catacombs","boss":"Andariel"}]`. |
 | `TIME_ZONE_ID` | no | `Europe/London` | IANA id; resolved cross-platform on .NET 6+. |
 | `WEBSITE_TIME_ZONE` | no | `GMT Standard Time` | Controls how the 09:00 CRON is interpreted in Azure. See below. |
 

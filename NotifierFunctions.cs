@@ -44,7 +44,7 @@ public sealed class NotifierFunctions
     private async Task ExecuteAsync(CancellationToken ct)
     {
         var feedUrl = _config["FEED_URL"] ?? DefaultFeedUrl;
-        var zoneKeyword = _config["ZONE_KEYWORD"] ?? "Durance";
+        var targets = ZoneTarget.Parse(_config["ZONE_TARGETS"]);
         var tzId = _config["TIME_ZONE_ID"] ?? "Europe/London";
         var sendWhenNone = bool.TryParse(_config["SEND_WHEN_NONE"], out var s) && s;
 
@@ -53,7 +53,7 @@ public sealed class NotifierFunctions
         var entries = await _d2emu.FetchScheduleAsync(feedUrl, ct);
         _log.LogInformation("Fetched {Count} terror-zone slots from feed.", entries.Count);
 
-        var result = TerrorZoneScheduleService.BuildForToday(entries, localZone, zoneKeyword, DateTimeOffset.UtcNow);
+        var result = TerrorZoneScheduleService.BuildForToday(entries, localZone, targets, DateTimeOffset.UtcNow);
 
         if (!result.TodayPresentInFeed)
         {
@@ -64,13 +64,13 @@ public sealed class NotifierFunctions
 
         if (result.Windows.Count == 0)
         {
-            _log.LogInformation("No '{Keyword}' terror zone today.", zoneKeyword);
+            _log.LogInformation("No tracked terror zones today.");
             if (sendWhenNone)
                 await _email.SendAsync(EmailContentBuilder.NoneToday(result), ct);
             return;
         }
 
-        _log.LogInformation("{Count} '{Keyword}' window(s) today; emailing.", result.Windows.Count, zoneKeyword);
+        _log.LogInformation("{Count} tracked window(s) today; emailing.", result.Windows.Count);
         await _email.SendAsync(EmailContentBuilder.ForWindows(result, localZone), ct);
     }
 }

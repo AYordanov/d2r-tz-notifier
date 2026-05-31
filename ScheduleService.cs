@@ -1,10 +1,10 @@
-namespace MephistoTzNotifier;
+namespace TerrorZoneNotifier;
 
 /// <summary>A contiguous run of terror-zone slots merged into one local-time window.</summary>
 /// <param name="Start">Window start, in the configured local zone.</param>
-/// <param name="End">Window end (last slot start + <see cref="MephistoScheduleService.SlotLength"/>), local.</param>
+/// <param name="End">Window end (last slot start + <see cref="TerrorZoneScheduleService.SlotLength"/>), local.</param>
 /// <param name="Source">The first slot in the window; carries zone/immunity/pack details.</param>
-public sealed record MephistoWindow(DateTimeOffset Start, DateTimeOffset End, TerrorZoneEntry Source);
+public sealed record TerrorZoneWindow(DateTimeOffset Start, DateTimeOffset End, TerrorZoneEntry Source);
 
 /// <summary>The outcome of evaluating the feed for a single local day.</summary>
 /// <param name="LocalDate">The local date that was evaluated.</param>
@@ -13,13 +13,13 @@ public sealed record MephistoWindow(DateTimeOffset Start, DateTimeOffset End, Te
 /// stale or its horizon has run out, and a gap alert is sent instead of a "nothing today" result.
 /// </param>
 /// <param name="Windows">The merged matching windows for the day (empty if none match).</param>
-public sealed record DayResult(DateOnly LocalDate, bool TodayPresentInFeed, IReadOnlyList<MephistoWindow> Windows);
+public sealed record DayResult(DateOnly LocalDate, bool TodayPresentInFeed, IReadOnlyList<TerrorZoneWindow> Windows);
 
 /// <summary>
 /// Turns the flat d2emu slot feed into the windows that match the configured zone keyword today.
 /// Pure/deterministic: takes "now" as an argument so it can be unit-tested.
 /// </summary>
-public static class MephistoScheduleService
+public static class TerrorZoneScheduleService
 {
     /// <summary>Slot cadence. 30 min under Reign of the Warlock; set to 60 for vanilla.</summary>
     public static readonly TimeSpan SlotLength = TimeSpan.FromMinutes(30);
@@ -49,15 +49,15 @@ public static class MephistoScheduleService
     }
 
     /// <summary>Coalesces back-to-back slots (each <see cref="SlotLength"/> apart) into single windows.</summary>
-    private static List<MephistoWindow> MergeSlots(List<(TerrorZoneEntry Entry, DateTimeOffset Start)> slots)
+    private static List<TerrorZoneWindow> MergeSlots(List<(TerrorZoneEntry Entry, DateTimeOffset Start)> slots)
     {
-        var windows = new List<MephistoWindow>();
+        var windows = new List<TerrorZoneWindow>();
         foreach (var slot in slots)
         {
             if (windows.Count > 0 && windows[^1].End == slot.Start)
                 windows[^1] = windows[^1] with { End = slot.Start + SlotLength };
             else
-                windows.Add(new MephistoWindow(slot.Start, slot.Start + SlotLength, slot.Entry));
+                windows.Add(new TerrorZoneWindow(slot.Start, slot.Start + SlotLength, slot.Entry));
         }
         return windows;
     }

@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MephistoTzNotifier.csproj" />
+    <ProjectReference Include="..\TerrorZoneNotifier.csproj" />
   </ItemGroup>
 
 </Project>

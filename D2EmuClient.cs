@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace MephistoTzNotifier;
+namespace TerrorZoneNotifier;
 
 /// <summary>Fetches the d2emu single-player terror-zone calendar (a static JSON array).</summary>
 public sealed class D2EmuClient

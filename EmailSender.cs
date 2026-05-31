@@ -2,7 +2,7 @@ using Microsoft.Extensions.Configuration;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-namespace MephistoTzNotifier;
+namespace TerrorZoneNotifier;
 
 public sealed class EmailSender
 {

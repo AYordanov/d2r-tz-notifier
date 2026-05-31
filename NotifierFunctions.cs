@@ -4,7 +4,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace MephistoTzNotifier;
+namespace TerrorZoneNotifier;
 
 public sealed class NotifierFunctions
 {
@@ -25,7 +25,7 @@ public sealed class NotifierFunctions
 
     // 09:00 every day. Interpreted in the WEBSITE_TIME_ZONE app setting (see README) so it
     // tracks 9am UK local across the BST/GMT switch rather than drifting.
-    [Function("MephistoNotifier")]
+    [Function("TerrorZoneNotifier")]
     public Task RunScheduled([TimerTrigger("0 0 9 * * *")] TimerInfo timer, CancellationToken ct)
         => ExecuteAsync(ct);
 
@@ -53,7 +53,7 @@ public sealed class NotifierFunctions
         var entries = await _d2emu.FetchScheduleAsync(feedUrl, ct);
         _log.LogInformation("Fetched {Count} terror-zone slots from feed.", entries.Count);
 
-        var result = MephistoScheduleService.BuildForToday(entries, localZone, zoneKeyword, DateTimeOffset.UtcNow);
+        var result = TerrorZoneScheduleService.BuildForToday(entries, localZone, zoneKeyword, DateTimeOffset.UtcNow);
 
         if (!result.TodayPresentInFeed)
         {

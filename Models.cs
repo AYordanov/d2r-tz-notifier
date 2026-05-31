@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace MephistoTzNotifier;
+namespace TerrorZoneNotifier;
 
 /// <summary>
 /// One terror-zone slot from the d2emu single-player feed.

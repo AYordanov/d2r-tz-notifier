@@ -1,4 +1,4 @@
-using MephistoTzNotifier;
+using TerrorZoneNotifier;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,7 +12,7 @@ var host = new HostBuilder()
         services.AddHttpClient<D2EmuClient>(c =>
         {
             c.Timeout = TimeSpan.FromSeconds(30);
-            c.DefaultRequestHeaders.UserAgent.ParseAdd("MephistoTzNotifier/1.0");
+            c.DefaultRequestHeaders.UserAgent.ParseAdd("TerrorZoneNotifier/1.0");
         });
 
         services.AddSingleton<EmailSender>();

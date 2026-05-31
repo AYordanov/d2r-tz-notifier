@@ -1,8 +1,8 @@
-using MephistoTzNotifier;
+using TerrorZoneNotifier;
 
-namespace MephistoTzNotifier.Tests;
+namespace TerrorZoneNotifier.Tests;
 
-public class MephistoScheduleServiceTests
+public class TerrorZoneScheduleServiceTests
 {
     // Fixed "now": 2026-02-15 12:00 UTC. Tests run in UTC so the local date is unambiguous.
     private static readonly DateTimeOffset NowUtc = new(2026, 2, 15, 12, 0, 0, TimeSpan.Zero);
@@ -23,7 +23,7 @@ public class MephistoScheduleServiceTests
             Slot("2026-02-15T10:30:00+00:00", "Durance of Hate"),
         };
 
-        var result = MephistoScheduleService.BuildForToday(entries, Utc, "Durance", NowUtc);
+        var result = TerrorZoneScheduleService.BuildForToday(entries, Utc, "Durance", NowUtc);
 
         var window = Assert.Single(result.Windows);
         Assert.Equal(new DateTimeOffset(2026, 2, 15, 10, 0, 0, TimeSpan.Zero), window.Start);
@@ -40,7 +40,7 @@ public class MephistoScheduleServiceTests
             Slot("2026-02-15T14:00:00+00:00", "Durance of Hate"),
         };
 
-        var result = MephistoScheduleService.BuildForToday(entries, Utc, "Durance", NowUtc);
+        var result = TerrorZoneScheduleService.BuildForToday(entries, Utc, "Durance", NowUtc);
 
         Assert.Equal(2, result.Windows.Count);
         Assert.Equal(TimeSpan.FromMinutes(30), result.Windows[0].End - result.Windows[0].Start);
@@ -56,7 +56,7 @@ public class MephistoScheduleServiceTests
             Slot("2026-02-15T10:30:00+00:00", "Durance of Hate"),
         };
 
-        var result = MephistoScheduleService.BuildForToday(entries, Utc, "Durance", NowUtc);
+        var result = TerrorZoneScheduleService.BuildForToday(entries, Utc, "Durance", NowUtc);
 
         var window = Assert.Single(result.Windows);
         Assert.Equal("Durance of Hate", window.Source.EnglishName);
@@ -67,7 +67,7 @@ public class MephistoScheduleServiceTests
     {
         var entries = new[] { Slot("2026-02-15T10:00:00+00:00", "Durance of Hate") };
 
-        var result = MephistoScheduleService.BuildForToday(entries, Utc, "durance", NowUtc);
+        var result = TerrorZoneScheduleService.BuildForToday(entries, Utc, "durance", NowUtc);
 
         Assert.Single(result.Windows);
     }
@@ -81,7 +81,7 @@ public class MephistoScheduleServiceTests
             Slot("2026-02-16T10:00:00+00:00", "Durance of Hate"), // tomorrow
         };
 
-        var result = MephistoScheduleService.BuildForToday(entries, Utc, "Durance", NowUtc);
+        var result = TerrorZoneScheduleService.BuildForToday(entries, Utc, "Durance", NowUtc);
 
         // No slot covers the 15th, so today is absent from the feed and nothing matches.
         Assert.False(result.TodayPresentInFeed);
@@ -93,7 +93,7 @@ public class MephistoScheduleServiceTests
     {
         var entries = new[] { Slot("2026-02-20T10:00:00+00:00", "Durance of Hate") };
 
-        var result = MephistoScheduleService.BuildForToday(entries, Utc, "Durance", NowUtc);
+        var result = TerrorZoneScheduleService.BuildForToday(entries, Utc, "Durance", NowUtc);
 
         Assert.False(result.TodayPresentInFeed);
         Assert.Empty(result.Windows);
@@ -104,7 +104,7 @@ public class MephistoScheduleServiceTests
     {
         var entries = new[] { Slot("2026-02-15T10:00:00+00:00", "Blood Moor") };
 
-        var result = MephistoScheduleService.BuildForToday(entries, Utc, "Durance", NowUtc);
+        var result = TerrorZoneScheduleService.BuildForToday(entries, Utc, "Durance", NowUtc);
 
         Assert.True(result.TodayPresentInFeed);
         Assert.Empty(result.Windows);
@@ -119,7 +119,7 @@ public class MephistoScheduleServiceTests
         // This slot lands on the 16th locally and must be excluded.
         var entries = new[] { Slot("2026-02-16T10:00:00+00:00", "Durance of Hate") };
 
-        var result = MephistoScheduleService.BuildForToday(entries, ny, "Durance", nowUtc);
+        var result = TerrorZoneScheduleService.BuildForToday(entries, ny, "Durance", nowUtc);
 
         Assert.Equal(new DateOnly(2026, 2, 15), result.LocalDate);
         Assert.False(result.TodayPresentInFeed);
@@ -134,7 +134,7 @@ public class MephistoScheduleServiceTests
         var nowUtc = new DateTimeOffset(2026, 2, 15, 12, 0, 0, TimeSpan.Zero);
         var entries = new[] { Slot("2026-02-15T10:00:00+00:00", "Durance of Hate") };
 
-        var result = MephistoScheduleService.BuildForToday(entries, ny, "Durance", nowUtc);
+        var result = TerrorZoneScheduleService.BuildForToday(entries, ny, "Durance", nowUtc);
 
         var window = Assert.Single(result.Windows);
         Assert.Equal(5, window.Start.Hour);

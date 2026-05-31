@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace MephistoTzNotifier;
+namespace TerrorZoneNotifier;
 
 public sealed record EmailContent(string Subject, string PlainBody, string HtmlBody);
 

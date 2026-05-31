@@ -1,4 +1,4 @@
-# Mephisto TZ Notifier
+# Terror Zone Notifier
 
 A .NET 10 (isolated worker) Azure Function that emails you each morning at **09:00 UK time**
 listing when **Mephisto (Durance of Hate)** is terrorized today, using the d2emu single-player
@@ -8,7 +8,7 @@ Designed for **D2R single-player, Reign of the Warlock** (30-minute rotation).
 
 ## How it works
 
-1. `MephistoNotifier` fires daily at 09:00 (interpreted in `WEBSITE_TIME_ZONE`).
+1. `TerrorZoneNotifier` fires daily at 09:00 (interpreted in `WEBSITE_TIME_ZONE`).
 2. It downloads the static feed `https://d2emu.com/data/tz-2023-localized.json`.
 3. It converts every UTC slot into your local zone, keeps the ones whose English name contains
    `ZONE_KEYWORD` (`"Durance"`) and start **today**, and merges back-to-back 30-min slots into
@@ -84,5 +84,5 @@ func azure functionapp publish <your-function-app-name>
 - **Personal use.** You're emailing yourself, not redistributing the data.
 - **Package versions** in the `.csproj` are current as of writing — `dotnet restore` and bump if
   the Worker/SDK templates have moved on.
-- **Slot length** is hard-coded to 30 minutes in `MephistoScheduleService` (Reign of the Warlock).
+- **Slot length** is hard-coded to 30 minutes in `TerrorZoneScheduleService` (Reign of the Warlock).
   Change `SlotLength` to 60 min if you ever run vanilla.

@@ -14,7 +14,7 @@ permissions:
 
 env:
   DOTNET_VERSION: '10.0.x'
-  PROJECT: 'MephistoTzNotifier.csproj'
+  PROJECT: 'TerrorZoneNotifier.csproj'
   PUBLISH_DIR: ${{ github.workspace }}/publish_output
 
 jobs:

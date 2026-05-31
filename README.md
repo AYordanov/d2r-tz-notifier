@@ -26,7 +26,7 @@ There is also a `RunNow` HTTP trigger so you can test on demand without waiting 
 | Setting | Required | Default | Notes |
 |---|---|---|---|
 | `SENDGRID_API_KEY` | yes | — | SendGrid API key. |
-| `SENDGRID_TEMPLATE_ID` | yes | — | Dynamic template id (`d-…`). Create it from [`sendgrid-template.json`](sendgrid-template.json). |
+| `SENDGRID_TEMPLATE_ID` | yes | — | Dynamic template id (`d-…`). Create it from [`sendgrid-template.html`](sendgrid-template.html). |
 | `MEPHISTO_FROM_EMAIL` | yes | — | Must be a **verified sender** in SendGrid. |
 | `MEPHISTO_TO_EMAIL` | yes | — | Where the mail goes (your inbox). |
 | `SEND_WHEN_NONE` | no | `false` | Email on days when no tracked zone is up. |
@@ -55,10 +55,16 @@ The email's look lives in a SendGrid **dynamic template**, not in code — the a
 (`EmailData`). To create it:
 
 1. In SendGrid: **Email API → Dynamic Templates → Create a Dynamic Template → Add Version → Code Editor**.
-2. Paste the `html_content` from [`sendgrid-template.json`](sendgrid-template.json) into the editor, and
-   set the version **Subject** to `{{subject}}`.
-3. (Optional) Paste the `test_data` into the editor's *Test Data* to preview it.
-4. Save, copy the template id (`d-…`), and set it as the `SENDGRID_TEMPLATE_ID` app setting.
+2. Paste the contents of [`sendgrid-template.html`](sendgrid-template.html) into the editor, and set the
+   version **Subject** to `{{subject}}`.
+3. Save, copy the template id (`d-…`), and set it as the `SENDGRID_TEMPLATE_ID` app setting.
+
+To preview the design in SendGrid's editor, paste this into its *Test Data* panel:
+
+```json
+{ "subject": "Terror zones today — Mephisto 10:00", "dateLabel": "Sunday 31 May", "hasWindows": true, "isFeedGap": false,
+  "groups": [ { "boss": "Mephisto", "zone": "Durance of Hate", "windows": [ { "time": "10:00–11:00 BST" } ], "immunities": "Fire, Lightning", "packs": "5–8", "uniques": "—" } ] }
+```
 
 The template renders three states from one payload — windows today, nothing today, and a feed-gap
 alert — via Handlebars (`hasWindows` / `isFeedGap`). It's styled dark obsidian with a blood-red header

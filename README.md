@@ -11,8 +11,8 @@ Designed for **D2R single-player, Reign of the Warlock** (30-minute rotation).
 1. `TerrorZoneNotifier` fires daily at 09:00 (interpreted in `WEBSITE_TIME_ZONE`).
 2. It downloads the static feed `https://d2emu.com/data/tz-2023-localized.json`.
 3. It converts every UTC slot into your local zone, keeps the ones whose English name matches any
-   configured `ZONE_TARGETS` keyword and start **today**, and merges back-to-back 30-min slots of
-   the same zone into single windows.
+   zone in `zone-targets.json` and start **today**, and merges back-to-back 30-min slots of the
+   same zone into single windows.
 4. Outcomes:
    - **A tracked zone today** → email with each boss's window(s), immunities, boss-pack count, super uniques.
    - **No tracked zone today** → silent by default; set `SEND_WHEN_NONE=true` for a "nothing today" note.
@@ -28,9 +28,24 @@ There is also a `RunNow` HTTP trigger so you can test on demand without waiting 
 | `MEPHISTO_FROM_EMAIL` | yes | — | Must be a **verified sender** in SendGrid. |
 | `MEPHISTO_TO_EMAIL` | yes | — | Where the mail goes (your inbox). |
 | `SEND_WHEN_NONE` | no | `false` | Email on days when no tracked zone is up. |
-| `ZONE_TARGETS` | no | `[{"keyword":"Durance","boss":"Mephisto"}]` | JSON array of zones to track. Each item has a `keyword` (substring matched against the English zone name) and a `boss` (label shown in the email). Add entries to track more, e.g. `[{"keyword":"Durance","boss":"Mephisto"},{"keyword":"Catacombs","boss":"Andariel"}]`. |
 | `TIME_ZONE_ID` | no | `Europe/London` | IANA id; resolved cross-platform on .NET 6+. |
 | `WEBSITE_TIME_ZONE` | no | `GMT Standard Time` | Controls how the 09:00 CRON is interpreted in Azure. See below. |
+
+### Tracked zones (`zone-targets.json`)
+
+Which zones to watch lives in [`zone-targets.json`](zone-targets.json), bundled with the app (not an
+app setting). Each entry has a `keyword` (substring matched against the feed's English zone name) and
+a `boss` (label shown in the email):
+
+```json
+[
+  { "keyword": "Durance", "boss": "Mephisto" },
+  { "keyword": "Catacombs", "boss": "Andariel" }
+]
+```
+
+Add or remove entries to change what's tracked, then redeploy. If the file is missing it falls back to
+tracking Durance (Mephisto).
 
 ## The 9am / timezone bit (read this)
 

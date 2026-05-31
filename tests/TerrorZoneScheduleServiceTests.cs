@@ -210,4 +210,25 @@ public class TerrorZoneScheduleServiceTests
             t => { Assert.Equal("Durance", t.Keyword); Assert.Equal("Mephisto", t.Boss); },
             t => { Assert.Equal("Catacombs", t.Keyword); Assert.Equal("Andariel", t.Boss); });
     }
+
+    [Fact]
+    public void LoadFromFile_returns_default_when_file_missing()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"missing-{Guid.NewGuid():N}.json");
+        Assert.Equal(ZoneTarget.Default, ZoneTarget.LoadFromFile(path));
+    }
+
+    [Fact]
+    public void LoadFromFile_reads_targets_from_disk()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"targets-{Guid.NewGuid():N}.json");
+        File.WriteAllText(path, "[{\"keyword\":\"Catacombs\",\"boss\":\"Andariel\"}]");
+        try
+        {
+            var t = Assert.Single(ZoneTarget.LoadFromFile(path));
+            Assert.Equal("Catacombs", t.Keyword);
+            Assert.Equal("Andariel", t.Boss);
+        }
+        finally { File.Delete(path); }
+    }
 }

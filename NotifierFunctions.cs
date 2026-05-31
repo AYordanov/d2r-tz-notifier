@@ -44,7 +44,7 @@ public sealed class NotifierFunctions
     private async Task ExecuteAsync(CancellationToken ct)
     {
         var feedUrl = _config["FEED_URL"] ?? DefaultFeedUrl;
-        var targets = ZoneTarget.Parse(_config["ZONE_TARGETS"]);
+        var targets = ZoneTarget.LoadFromFile(Path.Combine(AppContext.BaseDirectory, "zone-targets.json"));
         var tzId = _config["TIME_ZONE_ID"] ?? "Europe/London";
         var sendWhenNone = bool.TryParse(_config["SEND_WHEN_NONE"], out var s) && s;
 

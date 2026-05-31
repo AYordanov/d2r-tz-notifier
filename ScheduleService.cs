@@ -25,6 +25,10 @@ public sealed record ZoneTarget(string Keyword, string Boss)
         var parsed = JsonSerializer.Deserialize<List<ZoneTarget>>(json, JsonOpts);
         return parsed is { Count: > 0 } ? parsed : Default;
     }
+
+    /// <summary>Loads targets from the bundled zone-targets.json; falls back to <see cref="Default"/> if absent.</summary>
+    public static IReadOnlyList<ZoneTarget> LoadFromFile(string path) =>
+        File.Exists(path) ? Parse(File.ReadAllText(path)) : Default;
 }
 
 /// <summary>A contiguous run of terror-zone slots for one zone, merged into a single local-time window.</summary>

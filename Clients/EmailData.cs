@@ -3,7 +3,7 @@ namespace TerrorZoneNotifier;
 /// <summary>
 /// Builds the dynamic-template data objects passed to SendGrid. All presentation (HTML, fonts,
 /// styling) lives in the SendGrid dynamic template — here we only shape the data it renders.
-/// Property names are camelCase to match the Handlebars variables in sendgrid-template.html.
+/// Property names are camelCase to match the Handlebars variables in Templates/sendgrid-template.html.
 /// </summary>
 public static class EmailData
 {

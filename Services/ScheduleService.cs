@@ -80,7 +80,7 @@ public static class TerrorZoneScheduleService
             .ToList();
 
         // Drop windows that have already ended by "now" — e.g. an overnight zone is pointless to
-        // report when the job runs at 09:00. Ongoing windows (started earlier, not yet ended) stay.
+        // report when the job runs at 08:00. Ongoing windows (started earlier, not yet ended) stay.
         var windows = MergeSlots(matches)
             .Where(w => w.End > nowUtc)
             .ToList();

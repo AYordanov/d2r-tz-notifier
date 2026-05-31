@@ -11,11 +11,11 @@ public sealed class NotifierFunctions
     private const string DefaultFeedUrl = "https://d2emu.com/data/tz-2023-localized.json";
 
     private readonly D2EmuClient _d2emu;
-    private readonly EmailSender _email;
+    private readonly EmailClient _email;
     private readonly IConfiguration _config;
     private readonly ILogger<NotifierFunctions> _log;
 
-    public NotifierFunctions(D2EmuClient d2emu, EmailSender email, IConfiguration config, ILogger<NotifierFunctions> log)
+    public NotifierFunctions(D2EmuClient d2emu, EmailClient email, IConfiguration config, ILogger<NotifierFunctions> log)
     {
         _d2emu = d2emu;
         _email = email;
@@ -23,10 +23,10 @@ public sealed class NotifierFunctions
         _log = log;
     }
 
-    // 09:00 every day. Interpreted in the WEBSITE_TIME_ZONE app setting (see README) so it
-    // tracks 9am UK local across the BST/GMT switch rather than drifting.
+    // 08:00 every day. Interpreted in the WEBSITE_TIME_ZONE app setting (see README) so it
+    // tracks 8am UK local across the BST/GMT switch rather than drifting.
     [Function("TerrorZoneNotifier")]
-    public Task RunScheduled([TimerTrigger("0 0 9 * * *")] TimerInfo timer, CancellationToken ct)
+    public Task RunScheduled([TimerTrigger("0 0 8 * * *")] TimerInfo timer, CancellationToken ct)
         => ExecuteAsync(ct);
 
     // Manual trigger for testing: GET/POST the function URL to run immediately.
@@ -44,7 +44,7 @@ public sealed class NotifierFunctions
     private async Task ExecuteAsync(CancellationToken ct)
     {
         var feedUrl = _config["FEED_URL"] ?? DefaultFeedUrl;
-        var targets = ZoneTarget.LoadFromFile(Path.Combine(AppContext.BaseDirectory, "zone-targets.json"));
+        var targets = ZoneTarget.LoadFromFile(Path.Combine(AppContext.BaseDirectory, "Schema", "zone-targets.json"));
         var tzId = _config["TIME_ZONE_ID"] ?? "Europe/London";
         var sendWhenNone = bool.TryParse(_config["SEND_WHEN_NONE"], out var s) && s;
 

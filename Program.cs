@@ -15,7 +15,7 @@ var host = new HostBuilder()
             c.DefaultRequestHeaders.UserAgent.ParseAdd("TerrorZoneNotifier/1.0");
         });
 
-        services.AddSingleton<EmailSender>();
+        services.AddSingleton<EmailClient>();
     })
     .Build();
 

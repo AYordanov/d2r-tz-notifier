@@ -4,14 +4,14 @@ using SendGrid.Helpers.Mail;
 
 namespace TerrorZoneNotifier;
 
-public sealed class EmailSender
+public sealed class EmailClient
 {
     private readonly string _apiKey;
     private readonly string _from;
     private readonly string _to;
     private readonly string _templateId;
 
-    public EmailSender(IConfiguration config)
+    public EmailClient(IConfiguration config)
     {
         _apiKey = Required(config, "SENDGRID_API_KEY");
         _from = Required(config, "MEPHISTO_FROM_EMAIL");  // must be a SendGrid-verified sender

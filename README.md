@@ -1,6 +1,6 @@
 # Terror Zone Notifier
 
-A .NET 10 (isolated worker) Azure Function that emails you each morning at **09:00 UK time**
+A .NET 10 (isolated worker) Azure Function that emails you each morning at **08:00 UK time**
 listing when **Mephisto (Durance of Hate)** is terrorized today, using the d2emu single-player
 terror-zone calendar as the source and SendGrid to send the mail.
 
@@ -8,34 +8,34 @@ Designed for **D2R single-player, Reign of the Warlock** (30-minute rotation).
 
 ## How it works
 
-1. `TerrorZoneNotifier` fires daily at 09:00 (interpreted in `WEBSITE_TIME_ZONE`).
+1. `TerrorZoneNotifier` fires daily at 08:00 (interpreted in `WEBSITE_TIME_ZONE`).
 2. It downloads the static feed `https://d2emu.com/data/tz-2023-localized.json`.
 3. It converts every UTC slot into your local zone, keeps the ones whose English name matches any
    zone in `zone-targets.json` and start **today**, merges back-to-back 30-min slots of the same
-   zone into single windows, and drops any window that's already ended (so the 9am run won't report
+   zone into single windows, and drops any window that's already ended (so the 8am run won't report
    last night's zones — ongoing windows are kept).
 4. Outcomes:
    - **A tracked zone today** → email with each boss's window(s), immunities, boss-pack count, super uniques.
    - **No tracked zone today** → silent by default; set `SEND_WHEN_NONE=true` for a "nothing today" note.
    - **Today missing from the feed** (stale file / horizon exhausted) → always emails a gap alert.
 
-There is also a `RunNow` HTTP trigger so you can test on demand without waiting for 09:00.
+There is also a `RunNow` HTTP trigger so you can test on demand without waiting for 08:00.
 
 ## Configuration (app settings)
 
 | Setting | Required | Default | Notes |
 |---|---|---|---|
 | `SENDGRID_API_KEY` | yes | — | SendGrid API key. |
-| `SENDGRID_TEMPLATE_ID` | yes | — | Dynamic template id (`d-…`). Create it from [`sendgrid-template.html`](sendgrid-template.html). |
+| `SENDGRID_TEMPLATE_ID` | yes | — | Dynamic template id (`d-…`). Create it from [`sendgrid-template.html`](Templates/sendgrid-template.html). |
 | `MEPHISTO_FROM_EMAIL` | yes | — | Must be a **verified sender** in SendGrid. |
 | `MEPHISTO_TO_EMAIL` | yes | — | Where the mail goes (your inbox). |
 | `SEND_WHEN_NONE` | no | `false` | Email on days when no tracked zone is up. |
 | `TIME_ZONE_ID` | no | `Europe/London` | IANA id; resolved cross-platform on .NET 6+. |
-| `WEBSITE_TIME_ZONE` | no | `GMT Standard Time` | Controls how the 09:00 CRON is interpreted in Azure. See below. |
+| `WEBSITE_TIME_ZONE` | no | `GMT Standard Time` | Controls how the 08:00 CRON is interpreted in Azure. See below. |
 
 ### Tracked zones (`zone-targets.json`)
 
-Which zones to watch lives in [`zone-targets.json`](zone-targets.json), bundled with the app (not an
+Which zones to watch lives in [`zone-targets.json`](Schema/zone-targets.json), bundled with the app (not an
 app setting). Each entry has a `keyword` (substring matched against the feed's English zone name) and
 a `boss` (label shown in the email):
 
@@ -55,7 +55,7 @@ The email's look lives in a SendGrid **dynamic template**, not in code — the a
 (`EmailData`). To create it:
 
 1. In SendGrid: **Email API → Dynamic Templates → Create a Dynamic Template → Add Version → Code Editor**.
-2. Paste the contents of [`sendgrid-template.html`](sendgrid-template.html) into the editor, and set the
+2. Paste the contents of [`sendgrid-template.html`](Templates/sendgrid-template.html) into the editor, and set the
    version **Subject** to `{{subject}}`.
 3. Save, copy the template id (`d-…`), and set it as the `SENDGRID_TEMPLATE_ID` app setting.
 
@@ -73,15 +73,15 @@ deliberate: Gmail's mobile dark mode recolors near-black backgrounds, so a light
 everywhere. Custom fonts only render in clients that allow them (e.g. Apple Mail); Gmail falls back to
 serif but keeps the colours.
 
-## The 9am / timezone bit (read this)
+## The 8am / timezone bit (read this)
 
-The CRON is `0 0 9 * * *` — 09:00. Azure evaluates timer CRONs in **UTC** unless you set
-`WEBSITE_TIME_ZONE`. To keep it at 9am UK year-round (auto-handling the BST/GMT switch):
+The CRON is `0 0 8 * * *` — 08:00. Azure evaluates timer CRONs in **UTC** unless you set
+`WEBSITE_TIME_ZONE`. To keep it at 8am UK year-round (auto-handling the BST/GMT switch):
 
 - **Windows-hosted Function App:** `WEBSITE_TIME_ZONE = GMT Standard Time` (the Windows id for UK time).
 - **Linux-hosted Function App:** `WEBSITE_TIME_ZONE = Europe/London`.
 
-If you skip this, the job runs at 09:00 **UTC**, i.e. 10am during BST and 9am during GMT.
+If you skip this, the job runs at 08:00 **UTC**, i.e. 9am during BST and 8am during GMT.
 `TIME_ZONE_ID` is separate — it only affects how slot times are computed/displayed, and defaults
 to UK time already.
 
@@ -95,7 +95,7 @@ dotnet restore
 func start
 ```
 
-Then trigger a run immediately (don't wait for 9am):
+Then trigger a run immediately (don't wait for 8am):
 
 ```bash
 curl http://localhost:7071/api/RunNow

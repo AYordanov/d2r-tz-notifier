@@ -58,7 +58,7 @@ public sealed class NotifierFunctions
         if (!result.TodayPresentInFeed)
         {
             _log.LogWarning("Today ({Date}) is absent from the feed — sending gap alert.", result.LocalDate);
-            await _email.SendAsync(EmailContentBuilder.FeedGapAlert(result), ct);
+            await _email.SendAsync(EmailData.FeedGap(result), ct);
             return;
         }
 
@@ -66,11 +66,11 @@ public sealed class NotifierFunctions
         {
             _log.LogInformation("No tracked terror zones today.");
             if (sendWhenNone)
-                await _email.SendAsync(EmailContentBuilder.NoneToday(result), ct);
+                await _email.SendAsync(EmailData.NoneToday(result), ct);
             return;
         }
 
         _log.LogInformation("{Count} tracked window(s) today; emailing.", result.Windows.Count);
-        await _email.SendAsync(EmailContentBuilder.ForWindows(result, localZone), ct);
+        await _email.SendAsync(EmailData.ForWindows(result, localZone), ct);
     }
 }

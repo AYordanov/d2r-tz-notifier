@@ -26,6 +26,7 @@ There is also a `RunNow` HTTP trigger so you can test on demand without waiting 
 | Setting | Required | Default | Notes |
 |---|---|---|---|
 | `SENDGRID_API_KEY` | yes | — | SendGrid API key. |
+| `SENDGRID_TEMPLATE_ID` | yes | — | Dynamic template id (`d-…`). Create it from [`sendgrid-template.json`](sendgrid-template.json). |
 | `MEPHISTO_FROM_EMAIL` | yes | — | Must be a **verified sender** in SendGrid. |
 | `MEPHISTO_TO_EMAIL` | yes | — | Where the mail goes (your inbox). |
 | `SEND_WHEN_NONE` | no | `false` | Email on days when no tracked zone is up. |
@@ -47,6 +48,22 @@ a `boss` (label shown in the email):
 
 Add or remove entries to change what's tracked, then redeploy. If the file is missing it falls back to
 tracking Durance (Mephisto).
+
+### Email template (SendGrid dynamic template)
+
+The email's look lives in a SendGrid **dynamic template**, not in code — the app only sends data
+(`EmailData`). To create it:
+
+1. In SendGrid: **Email API → Dynamic Templates → Create a Dynamic Template → Add Version → Code Editor**.
+2. Paste the `html_content` from [`sendgrid-template.json`](sendgrid-template.json) into the editor, and
+   set the version **Subject** to `{{subject}}`.
+3. (Optional) Paste the `test_data` into the editor's *Test Data* to preview it.
+4. Save, copy the template id (`d-…`), and set it as the `SENDGRID_TEMPLATE_ID` app setting.
+
+The template renders three states from one payload — windows today, nothing today, and a feed-gap
+alert — via Handlebars (`hasWindows` / `isFeedGap`). It's styled dark/blood-red with a Trajan-like
+`Cinzel` heading font (custom fonts only render in clients that allow them, e.g. Apple Mail; Gmail
+falls back to serif but keeps the colours).
 
 ## The 9am / timezone bit (read this)
 

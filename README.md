@@ -61,9 +61,9 @@ The email's look lives in a SendGrid **dynamic template**, not in code — the a
 4. Save, copy the template id (`d-…`), and set it as the `SENDGRID_TEMPLATE_ID` app setting.
 
 The template renders three states from one payload — windows today, nothing today, and a feed-gap
-alert — via Handlebars (`hasWindows` / `isFeedGap`). It's styled dark/blood-red with a Trajan-like
-`Cinzel` heading font (custom fonts only render in clients that allow them, e.g. Apple Mail; Gmail
-falls back to serif but keeps the colours).
+alert — via Handlebars (`hasWindows` / `isFeedGap`). It's styled dark obsidian with a blood-red header
+banner and a Trajan-like `Cinzel` heading font (custom fonts only render in clients that allow them,
+e.g. Apple Mail; Gmail falls back to serif but keeps the colours).
 
 ## The 9am / timezone bit (read this)
 
